@@ -10,6 +10,8 @@ ICON_PATH = "assets/images/icon.png"
 BACKGROUND_MENU_PATH = "assets/images/background_menu.jpg"
 FONT_PATH = "fonts/Press_Start_2P/PressStart2P-Regular.ttf"
 MENU_MUSIC_PATH = "assets/music/menu_theme.mp3"
+MENU_BUTTON_PATH = "assets/images/button_menu.png"
+BACKGROUND_INTRO_PATH = "assets/images/background_intro.png"
 
 # colores
 
