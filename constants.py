@@ -18,6 +18,8 @@ MENU_BUTTON_PATH = "assets/images/button_menu.png"
 PLAYER_SPRITE_PATH = "sprites/character/media/character_sprite.png"
 BRICK_SPRITE_PATH = "sprites/bricks/brick_green.png"
 BALL_SPRITE_PATH = "assets/images/ball.png"
+VOLUME_ON_BUTTON_PATH = "assets/images/speaker.png"
+VOLUME_OFF_BUTTON_PATH = "assets/images/speaker_off.png"
 
 # colores
 
@@ -30,4 +32,5 @@ GRAY = (128, 128, 128)
 YELLOW = (255, 255, 0)
 ORANGE = (255, 165, 0)
 PURPLE = (200, 50, 255)
+LIGHT_BLUE = (0, 255, 255)
 

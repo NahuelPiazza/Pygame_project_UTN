@@ -1,7 +1,10 @@
 import pygame as pg
 import sys
 
-from screens import main_menu, introduction
+import random
+
+from ranking import add_score, get_ranking
+from screens import main_menu, introduction, ranking_screen
 import constants
 
 pg.init()
@@ -9,7 +12,7 @@ pg.mixer.init()
 
 #--------------------- seteamos ancho y alto de pantalla ---------------------
 
-screen = pg.display.set_mode((constants.DISPLAY_WIDTH, constants.DISPLAY_HEIGTH), pg.RESIZABLE)
+screen = pg.display.set_mode((constants.DISPLAY_WIDTH, constants.DISPLAY_HEIGTH))
 
 # --------------------- colocamos el icono y titulo de la ventana ---------------------
 
@@ -19,6 +22,7 @@ pg.display.set_caption("Galaxnoid!")
 # --------------------- Definir fuentes para los elementos ---------------------
 
 gral_text_font = pg.font.Font(constants.FONT_PATH, 25)
+intro_text_font = pg.font.Font(constants.FONT_PATH, 15)
 title_font = pg.font.Font(constants.FONT_PATH, 74)
 border_font = pg.font.Font(constants.FONT_PATH, 75)
 button_font = pg.font.Font(constants.FONT_PATH, 35)
@@ -34,10 +38,29 @@ brick_sprite = pg.transform.scale(pg.image.load(constants.BRICK_SPRITE_PATH).con
 
 # --------------------- contenedores Botones del menú -------------------
 
-start_button = pg.Rect(constants.DISPLAY_WIDTH // 2 - 110, constants.DISPLAY_HEIGTH // 2 , 250, 80)
-ranking_button = pg.Rect(constants.DISPLAY_WIDTH // 2 - 110, constants.DISPLAY_HEIGTH // 2 + 100, 250, 80)
-exit_button = pg.Rect(constants.DISPLAY_WIDTH // 2 - 110, constants.DISPLAY_HEIGTH // 2 + 100, 250, 80)
+start_button = pg.Rect(constants.DISPLAY_WIDTH // 2 - 110, constants.DISPLAY_HEIGTH // 2 + 10 , 250, 80)
+ranking_button = pg.Rect(constants.DISPLAY_WIDTH // 2 - 110, constants.DISPLAY_HEIGTH // 2 + 140, 250, 80)
+exit_button = pg.Rect(constants.DISPLAY_WIDTH // 2 - 110, constants.DISPLAY_HEIGTH // 2 + 250, 250, 80)
+volume_button = pg.Rect(20, 710, 50, 50)
 
+# --------------------- cargar y escalar imagenes botones --------------------- 
+
+menu_button = pg.image.load(constants.MENU_BUTTON_PATH).convert_alpha()
+menu_button = pg.transform.scale(menu_button, (constants.DISPLAY_WIDTH // 3 - 180, constants.DISPLAY_HEIGTH // 2 - 290))
+
+volume_on = pg.image.load(constants.VOLUME_ON_BUTTON_PATH).convert_alpha()
+volume_on = pg.transform.scale(volume_on, (80, 80))
+volume_on.set_colorkey(constants.BLACK)
+
+volume_off = pg.image.load(constants.VOLUME_OFF_BUTTON_PATH).convert_alpha()
+volume_off = pg.transform.scale(volume_off, (80, 80))
+volume_off.set_colorkey(constants.BLACK)
+
+# --------------------- Textos de los botones ---------------------
+
+text_start_button = button_font.render("Start", True, (190,190,190))
+text_exit_button = button_font.render("Exit", True, (190,190,190))
+text_ranking_button = button_font.render("ranking", True, (190,190,190))
 
 #  --------------------- ladrillos ---------------------
 
@@ -65,19 +88,10 @@ pelota_dy = -5 # Velocidad en y
 pelota_rect = pg.Rect(pelota_x - PELOTA_RADIO, pelota_y - PELOTA_RADIO, 
                           PELOTA_RADIO * 2, PELOTA_RADIO * 2)
 
- # --------------------- cargar y escalar la imagen del botón --------------------- 
-
-menu_button = pg.image.load(constants.MENU_BUTTON_PATH).convert_alpha()
-menu_button = pg.transform.scale(menu_button, (constants.DISPLAY_WIDTH // 3 - 180, constants.DISPLAY_HEIGTH // 2 - 290))
-
-# --------------------- Textos de los botones ---------------------
-
-text_start_button = button_font.render("Start", True, (190,190,190))
-text_exit_button = button_font.render("Exit", True, (190,190,190))
-text_ranking_button = button_font.render("ranking", True, (190,190,190))
 
 # --------------------- posicion inicial nave ---------------------
 character_sprite_rect = spaceship_sprite.get_rect(center=(constants.DISPLAY_WIDTH // 2,constants.DISPLAY_HEIGTH // 2 + 320))
+
 
 # pantalla del juego
 def game():
@@ -186,6 +200,8 @@ def main():
     introducction = True
     game_music_playing = False
     intro_music_playing = False
+    show_ranking = False
+    is_volume_on = True
 
     pg.mixer.music.load(constants.MENU_MUSIC_PATH)
     pg.mixer.music.play(1)
@@ -198,8 +214,10 @@ def main():
         for event in pg.event.get():
             # si el tipo de evento coincide con el evento de salir
             if event.type == pg.QUIT:
-                run = False # Salir del juego   
+                run = False # Salir del juego  
 
+
+            # -------------- funcionalidad botones del menu --------------
             elif event.type == pg.MOUSEBUTTONDOWN and mostra_menu:
                 mouse_pos = pg.mouse.get_pos()
                 if start_button.collidepoint(mouse_pos):
@@ -207,20 +225,45 @@ def main():
                     mostra_menu = False # Iniciar el juego
                 elif exit_button.collidepoint(mouse_pos):
                     run = False # Salir del juego 
+                elif volume_button.collidepoint(mouse_pos):
+                    is_volume_on = not is_volume_on
+                    if is_volume_on:
+                        pg.mixer.music.unpause()
+                    else:
+                        pg.mixer.music.pause()
+
+                elif ranking_button.collidepoint(mouse_pos):
+                    ranking_screen.draw_ranking(screen, title_font, gral_text_font)
+                    pg.display.flip()
+                    waiting_for_space = True   
+                    while waiting_for_space:
+                        for event in pg.event.get():
+                            if event.type == pg.QUIT:
+                                run = False
+                                waiting_for_space = False
+                            elif event.type == pg.KEYDOWN:
+                                if event.key == pg.K_SPACE:
+                                    waiting_for_space = False
+                    
+
         
+        # --------------- lógica para mostrar pantallas --------------
+
+        # ------ menú principal ------
         if mostra_menu:
-            main_menu.draw_menu(screen,background_menu, title_font, border_font, menu_button, text_start_button, text_exit_button, text_ranking_button,start_button, exit_button, ranking_button)
+            main_menu.draw_menu(screen,background_menu, title_font, border_font, menu_button, text_start_button, text_exit_button, text_ranking_button,start_button, exit_button, ranking_button, volume_on, volume_off, volume_button, is_volume_on)
         
         else:
-      
+        # ------ introducción al juego ------
             if introducction and not intro_music_playing:
                 pg.mixer.music.load(constants.INTRO_MUSIC_PATH)
                 pg.mixer.music.play(-1)     
-                introduction.introduction(screen, background_introduction, gral_text_font)
+                introduction.introduction(screen, background_introduction, intro_text_font, gral_text_font)
                 introducction = False
                 
             
             else:
+        # ------ juego principal ------
                 if not game_music_playing:
                     pg.mixer.music.load(constants.GAME_MUSIC_PATH)
                     pg.mixer.music.play(-1)  
