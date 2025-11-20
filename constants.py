@@ -15,7 +15,9 @@ MENU_MUSIC_PATH = "assets/music/music_menu.mp3"
 GAME_MUSIC_PATH = "assets/music/music_game.ogg"
 INTRO_MUSIC_PATH = "assets/music/music_intro.ogg"
 MENU_BUTTON_PATH = "assets/images/button_menu.png"
-PLAYER_SPRITE_PATH = "sprites/character/media/move_chr.png"
+PLAYER_SPRITE_PATH = "sprites/character/media/character_sprite.png"
+BRICK_SPRITE_PATH = "sprites/bricks/brick_green.png"
+BALL_SPRITE_PATH = "assets/images/ball.png"
 
 # colores
 
