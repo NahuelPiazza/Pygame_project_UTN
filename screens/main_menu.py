@@ -28,7 +28,7 @@ def draw_menu(screen,background_menu, title_font, border_font, menu_button, text
     else:
         screen.blit(volume_off, (volume_button.x, volume_button.y))
     
-    # dibuja el texto de los botones y los pega
+    # dibuja el texto de los botones y los pega (REVISAR LOS VALORES --> ######## REDUCIR CODIGO ########)
     screen.blit(text_start_button, (start_button.x + (start_button.width - text_start_button.get_width()) // 2 - 20 , start_button.y + (start_button.height - text_start_button.get_height()) // 2 - 30 ))
     screen.blit(text_exit_button, (exit_button.x + (exit_button.width - text_exit_button.get_width()) // 2 - 20, exit_button.y + (exit_button.height - text_exit_button.get_height()) // 2 -10))
     screen.blit(text_ranking_button, (ranking_button.x + (ranking_button.width - text_ranking_button.get_width()) // 2 - 20 , ranking_button.y + (ranking_button.height - text_ranking_button.get_height()) // 2 - 35))

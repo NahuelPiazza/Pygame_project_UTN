@@ -14,12 +14,14 @@ FONT_PATH = "fonts/Press_Start_2P/PressStart2P-Regular.ttf"
 MENU_MUSIC_PATH = "assets/music/music_menu.mp3"
 GAME_MUSIC_PATH = "assets/music/music_game.ogg"
 INTRO_MUSIC_PATH = "assets/music/music_intro.ogg"
-MENU_BUTTON_PATH = "assets/images/button_menu.png"
 PLAYER_SPRITE_PATH = "sprites/character/media/character_sprite.png"
-BRICK_SPRITE_PATH = "sprites/bricks/brick_green.png"
+NORMAL_BRICK_PATH = "sprites/bricks/normal_brick.png"
+SPECIAL_BRICK_PATH = "sprites/bricks/special_brick.png"
 BALL_SPRITE_PATH = "assets/images/ball.png"
+MENU_BUTTON_PATH = "assets/images/button_menu.png"
 VOLUME_ON_BUTTON_PATH = "assets/images/speaker.png"
 VOLUME_OFF_BUTTON_PATH = "assets/images/speaker_off.png"
+BUTTON_SOUND_PATH = "assets/Sounds/buttton_sound.wav"
 
 # colores
 

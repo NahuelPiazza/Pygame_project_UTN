@@ -44,4 +44,4 @@ def introduction(screen, background_introduction, text_font, title_font):
         screen.blit(rendered_text, (x_pos, y_pos))
     
     pg.display.flip()
-    pg.time.delay(1000)  
+    pg.time.delay(3000)  
