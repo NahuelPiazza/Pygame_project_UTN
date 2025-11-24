@@ -1,5 +1,5 @@
 import pygame as pg
-import constants
+import Utils.constants as constants
 # pantalla de menu inicio
 def draw_menu(screen,background_menu, title_font, border_font, menu_button, text_start_button, text_exit_button, text_ranking_button,start_button, exit_button, ranking_button, volume_on, volume_off, volume_button, is_volume_on):
     screen.blit(background_menu, (0, 0))

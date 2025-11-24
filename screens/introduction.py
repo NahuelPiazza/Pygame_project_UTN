@@ -1,7 +1,7 @@
 import pygame as pg
 import sys
 
-import constants
+import Utils.constants as constants
 
 def introduction(screen, background_introduction, text_font, title_font):
 
@@ -13,7 +13,7 @@ def introduction(screen, background_introduction, text_font, title_font):
     line_height = 50
 
     # ----- leemos texto -----
-    with open('intro_text.txt', 'r', encoding='utf-8') as file:
+    with open('assets/intro_text.txt', 'r', encoding='utf-8') as file:
         lines = file.readlines()
     
 

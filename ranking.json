@@ -1,11 +1,17 @@
-
 [
     {
-    "name": "juancho", 
-    "score": 200
+        "name": "juancho",
+        "score": 901,
+        "date": "24/11/2025 16:29"
     },
     {
-    "name": "elJOSE", 
-    "score": 9999
+        "name": "nahue",
+        "score": 400,
+        "date": "24/11/2025 16:28"
+    },
+    {
+        "name": "pepe",
+        "score": 10,
+        "date": "24/11/2025 16:46"
     }
 ]

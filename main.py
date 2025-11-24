@@ -4,8 +4,8 @@ import sys
 import random
 
 from ranking import add_score, get_ranking
-from screens import main_menu, introduction, ranking_screen
-import constants
+from screens import main_menu, introduction, ranking_screen,game_over
+from Utils import functions,constants
 
 pg.init()
 pg.mixer.init()
@@ -67,11 +67,12 @@ text_ranking_button = button_font.render("ranking", True, (190,190,190))
 
 #  ------------------------------------------------- pantalla del juego -----------------------------------------------------------------
 def game():
-    contador_vidas = 3
+    contador_vidas = 1
     puntaje = 0
     game_over_screen = False
     win_screen = False
     game_running = True
+    paused = False
 
 ############################################################ LOGICA DE PELOTA, LADRILLOS Y NAVE --> HACERLA POR FUERA ############################################################
 
@@ -134,58 +135,63 @@ def game():
 
 
         # 1.  -------------- Movimiento de la Pelota ----------------
+        if not paused:
+            pelota_rect.x += pelota_dx
+            pelota_rect.y += pelota_dy
 
-        pelota_rect.x += pelota_dx
-        pelota_rect.y += pelota_dy
-
-        # 2. Manejo de Eventos
-        
+            # 2. Manejo de Eventos
+            
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 pg.quit()
                 sys.exit()
+        
+                
+            elif event.type == pg.KEYDOWN:
+                if event.key == pg.K_p:
+                    paused = not paused  # Alternar entre pausado y no pausado
 
         keys = pg.key.get_pressed()
-        if keys[pg.K_LEFT]:
-            character_sprite_rect.x = max(0, character_sprite_rect.x)
-            character_sprite_rect.x = min(constants.DISPLAY_WIDTH - character_sprite_rect.width, character_sprite_rect.x)
-            character_sprite_rect.x -= 7
-        if keys[pg.K_RIGHT]:
-            character_sprite_rect.x = max(0, character_sprite_rect.x)
-            character_sprite_rect.x = min(constants.DISPLAY_WIDTH - character_sprite_rect.width, character_sprite_rect.x)
-            character_sprite_rect.x += 7
 
+        if not paused:
+
+            if keys[pg.K_LEFT]:
+                character_sprite_rect.x = max(0, character_sprite_rect.x)
+                character_sprite_rect.x = min(constants.DISPLAY_WIDTH - character_sprite_rect.width, character_sprite_rect.x)
+                character_sprite_rect.x -= 7
+            if keys[pg.K_RIGHT]:
+                character_sprite_rect.x = max(0, character_sprite_rect.x)
+                character_sprite_rect.x = min(constants.DISPLAY_WIDTH - character_sprite_rect.width, character_sprite_rect.x)
+                character_sprite_rect.x += 7
+        if not paused:
         # 3. -------------- Lógica de Colisiones ----------------
+            # -------- Colisión Izquierda
+            if pelota_rect.left <= 0:
+                pelota_dx = abs(pelota_dx) # Fuerza el rebote hacia la derecha
+                pelota_rect.left = 0       # Corrige la posición
+            # ------------ Colisión Derecha
+            elif pelota_rect.right >= constants.DISPLAY_WIDTH:
+                pelota_dx = -abs(pelota_dx) # Fuerza el rebote hacia la izquierda
+                pelota_rect.right = constants.DISPLAY_WIDTH # Corrige la posición
+            # ------------------ Colisión Superior
+            if pelota_rect.top <= 0:
+                pelota_dy = abs(pelota_dy) # Fuerza el rebote hacia abajo
+                pelota_rect.top = 0      # Corrige la posición
 
+            # --------- Colisión Pelota con la Nave (Pala)
 
-        # Colisión Izquierda
-        if pelota_rect.left <= 0:
-            pelota_dx = abs(pelota_dx) # Fuerza el rebote hacia la derecha
-            pelota_rect.left = 0       # Corrige la posición
-        # Colisión Derecha
-        elif pelota_rect.right >= constants.DISPLAY_WIDTH:
-            pelota_dx = -abs(pelota_dx) # Fuerza el rebote hacia la izquierda
-            pelota_rect.right = constants.DISPLAY_WIDTH # Corrige la posición
-        # Colisión Superior
-        if pelota_rect.top <= 0:
-            pelota_dy = abs(pelota_dy) # Fuerza el rebote hacia abajo
-            pelota_rect.top = 0      # Corrige la posición
-            
-
-        # B. Colisión Pelota con la Nave (Pala)
-
-        if pelota_rect.colliderect(character_sprite_rect) and pelota_dy > 0:
-            # Solo rebota si la pelota baja
-            pelota_dy *= -1 
-            pelota_rect.bottom = character_sprite_rect.top # Asegura que no se atasque
-            
-            # Lógica de rebote angular (convertido a entero para Pygame)
-            diferencia = pelota_rect.centerx - character_sprite_rect.centerx
-            pelota_dx = int(diferencia * 0.15) 
-            
-            # Aseguramos una velocidad mínima en X para que no se mueva verticalmente (evita estancamiento)
-            if abs(pelota_dx) < 1:
-                pelota_dx = 1 if diferencia > 0 else -1
+            if pelota_rect.colliderect(character_sprite_rect) and pelota_dy > 0:
+                # Solo rebota si la pelota baja
+                pelota_dy *= -1 
+                pelota_rect.bottom = character_sprite_rect.top # Asegura que no se atasque
+                
+                # Lógica de rebote angular (convertido a entero para Pygame)
+                diferencia = pelota_rect.centerx - character_sprite_rect.centerx
+                pelota_dx = int(diferencia * 0.15) 
+                
+                # Aseguramos una velocidad mínima en X para que no se mueva verticalmente (evita estancamiento)
+                if abs(pelota_dx) < 1:
+                    pelota_dx = 1 if diferencia > 0 else -1
 
 
         # C. Colisión Pelota con Ladrillos
@@ -212,11 +218,14 @@ def game():
         # Si la pelota cae por debajo de la nave 3 veces (Game Over)
         if pelota_rect.bottom >= constants.DISPLAY_HEIGTH:
             contador_vidas -= 1
+
             if contador_vidas <= 0:
                 game_over_screen = True
                 win_screen = False
                 game_running = False
-                return (game_over_screen, win_screen)
+                return (game_over_screen, win_screen, puntaje)
+            
+
             # vuelve a la posicion inicial
             pelota_rect.x = constants.DISPLAY_WIDTH // 2 - PELOTA_RADIO
             pelota_rect.y = constants.DISPLAY_HEIGTH // 2 - PELOTA_RADIO
@@ -224,14 +233,14 @@ def game():
             pelota_dy = -5
             character_sprite_rect.center = (constants.DISPLAY_WIDTH // 2,constants.DISPLAY_HEIGTH // 2 + 320)
 
-        # Ganar: Si no quedan ladrillos
+        
         if not ladrillos:
             print("¡VICTORIA!")
             win_screen = True
             game_over_screen = False
             game_running = False
-            return (game_over_screen, win_screen)
-            # Aquí podrías añadir una pantalla de Victoria
+            return (game_over_screen, win_screen, puntaje)
+           
         
 
 
@@ -259,21 +268,26 @@ def game():
 
         # Dibujar vidas y puntaje
         vidas_text = gral_text_font.render(f"Vidas: {contador_vidas}", True, constants.WHITE)
+        pause_button_text = intro_text_font.render("Pausa -> P ", True, constants.WHITE)
         puntaje_text = gral_text_font.render(f"Puntaje: {puntaje}", True, constants.WHITE)
+        screen.blit(pause_button_text, (constants.DISPLAY_WIDTH // 2 - pause_button_text.get_width() // 2, 10))
         screen.blit(vidas_text, (10, 10))   
         screen.blit(puntaje_text, (constants.DISPLAY_WIDTH - puntaje_text.get_width() - 10, 10))
+
+        if paused:
+            pause_text = gral_text_font.render("PAUSADO - Presiona P para continuar", True, constants.WHITE)
+            pause_rect = pause_text.get_rect(center=(constants.DISPLAY_WIDTH // 2, constants.DISPLAY_HEIGTH // 2))
+            screen.blit(pause_text, pause_rect)
 
         pg.display.flip()
 
 
 # ------------------------------------------------------------- bucle inicial del juego -------------------------------------------------------------
 def main():
-    clock = pg.time.Clock()
-    
 
     # --------------------- variables del juego ---------------------
-    contador_vidas = 3
-    puntaje = 0
+
+    clock = pg.time.Clock()
     run = True
     mostra_menu = True
     introducction = True
@@ -283,20 +297,22 @@ def main():
     is_volume_on = True
 
 
-    # ----------- musica del menu -------------
-    pg.mixer.music.load(constants.MENU_MUSIC_PATH)
-    pg.mixer.music.play(1)
-    pg.mixer.music.set_volume(0.4)
+    # --------------------- musica del menu ---------------------
+
+    functions.activeate_music_menu()
     
-    # ------------ sonido botones -------------
+    # --------------------- sonido botones ---------------------
+
     button_sound = pg.mixer.Sound(constants.BUTTON_SOUND_PATH)
     button_sound.set_volume(0.1)
 
-    # bucle principal del juego
+    # --------------------- bucle principal del juego ---------------------
 
     while run:
         
         clock.tick(60)  # Limitar a 60 FPS
+        
+       
 
         # entrega la lista de eventos que pueden ocurrir en el juego
         for event in pg.event.get():
@@ -304,7 +320,7 @@ def main():
             if event.type == pg.QUIT:
                 run = False # Salir del juego  
 
-
+        
             # -------------- funcionalidad botones del menu --------------
             elif event.type == pg.MOUSEBUTTONDOWN and mostra_menu:
                 mouse_pos = pg.mouse.get_pos()
@@ -345,7 +361,7 @@ def main():
                                     waiting_for_space = False
                     
 
-        
+            
         # --------------- lógica para mostrar pantallas --------------
 
 
@@ -374,20 +390,25 @@ def main():
                     game_music_playing = True
 
                 final_state = game()
-
+                puntaje = final_state[2]
 
                 print(final_state)
                 if final_state[0] == True:  # game_over_screen
+                    pg.mixer.music.stop()
+                    game_over.game_over(screen, gral_text_font, title_font, puntaje)
+                    game_music_playing = False
                     mostra_menu = True
                     introducction = True
-                    game_music_playing = False
                     ladrillos.clear()
+                    functions.activeate_music_menu()
                     
 
                 elif final_state[1] == True:  # win_screen
+                    pg.mixer.music.stop()
                     mostra_menu = True
                     introducction = True
                     game_music_playing = False
+                    functions.activeate_music_menu()
                     
 
         # actualiza la pantalla

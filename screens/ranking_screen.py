@@ -1,7 +1,7 @@
 import pygame as pg
 
 from ranking import get_ranking
-import constants
+import Utils.constants as constants
 
 
 def draw_ranking(screen, title_font, gral_text_font):
