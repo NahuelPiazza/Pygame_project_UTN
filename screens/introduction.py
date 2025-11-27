@@ -3,20 +3,23 @@ import sys
 
 import Utils.constants as constants
 
-def introduction(screen, background_introduction, text_font, title_font):
 
-    title_text = "¡¡ ULTIMA ESPERANZA !!"
+background_introduction = pg.transform.scale(pg.image.load(constants.BACKGROUND_INTRO_PATH).convert(),(constants.DISPLAY_WIDTH,constants.DISPLAY_HEIGTH))
+
+def introduction(screen, text_font, title_font):
+
+    title_text = "¡¡ LA ULTIMA ESPERANZA !!"
 
     screen.blit(background_introduction, (0, 0))
 
     # ----- espacio entre lineas -----
-    line_height = 50
+    line_height = 40
 
     # ----- leemos texto -----
+
     with open('assets/intro_text.txt', 'r', encoding='utf-8') as file:
         lines = file.readlines()
     
-
     total_text_height = len(lines) * line_height
     start_y = screen.get_height() // 2 - total_text_height // 2
 

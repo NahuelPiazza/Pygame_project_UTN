@@ -1,10 +1,11 @@
 
-# display
 
-DISPLAY_WIDTH = 800*2
-DISPLAY_HEIGTH = 400*2
+# DISPLAY
 
-# rutas
+DISPLAY_WIDTH = 1024
+DISPLAY_HEIGTH = 780
+
+# PATHS
 
 ICON_PATH = "assets/images/icon.png"
 BACKGROUND_MENU_PATH = "assets/images/background_menu.png"
@@ -23,7 +24,7 @@ VOLUME_ON_BUTTON_PATH = "assets/images/speaker.png"
 VOLUME_OFF_BUTTON_PATH = "assets/images/speaker_off.png"
 BUTTON_SOUND_PATH = "assets/Sounds/buttton_sound.wav"
 
-# colores
+# COLORS
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)

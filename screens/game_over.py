@@ -3,14 +3,16 @@ import sys
 import ranking
 import Utils.constants as cons
 
+
+
 def game_over(screen, text_font, title_font, score, game_over_screen=True):
 
-   title_text = "¡¡ GAME OVER !!"
+   title_text = "¡GAME OVER!"
    score_text = f"Tu puntuación: {score}"
    input_prompt = "Introduce tu nombre:"
    continue_text = "Pulsa ENTER para guardar | ESC para salir"
 
-   input_box = pg.Rect(screen.get_width() // 2 + 30 , 350, 200, 40)
+   input_box = pg.Rect(screen.get_width() // 2 + 100 , 350, 200, 40)
    player_name = ''
    active = True # La caja de entrada empieza activa
    score_saved = False # Indicador de si el puntaje ya fue guardado
@@ -61,25 +63,26 @@ def game_over(screen, text_font, title_font, score, game_over_screen=True):
 
       screen.fill((0, 0, 0))
 
-      # Dibujar título, puntuación y mensaje de entrada
+      # DRAW TITLE
       rendered_title = title_font.render(title_text, True, cons.RED)
       screen.blit(rendered_title, (screen.get_width() // 2 - rendered_title.get_width() // 2, 100))
-
+      
+      # DRAW SCORE
       rendered_score = text_font.render(score_text, True, (255, 255, 255))
       screen.blit(rendered_score, (screen.get_width() // 2 - rendered_score.get_width() // 2, 250))
 
       # Dibujar mensaje "Introduce tu nombre:"
       prompt_surf = text_font.render(input_prompt, True, (255, 255, 255))
-      screen.blit(prompt_surf, (input_box.x - 510 , input_box.y + 10))
+      screen.blit(prompt_surf, (input_box.x - 500 , input_box.y + 10))
 
       # Dibujar la caja de entrada de texto
       txt_surface = text_font.render(player_name, True, (255, 255, 255))
       # Ajustar el ancho de la caja si el texto es muy largo
-      width = max(200, txt_surface.get_width() + 10)
+      width = max(200, txt_surface.get_width() + 30)
       input_box.w = width
         
       # Blit (Dibujar) el texto en la caja
-      screen.blit(txt_surface, (input_box.x + 5, input_box.y + 5))
+      screen.blit(txt_surface, (input_box.x + 20, input_box.y + 5))
 
       # Dibujar el rectángulo de la caja
       
