@@ -14,7 +14,7 @@ normal_brick = pg.transform.scale(pg.image.load(constants.NORMAL_BRICK_PATH).con
 special_brick = pg.transform.scale(pg.image.load(constants.SPECIAL_BRICK_PATH).convert_alpha(), (70, 30))
 
 def game(gral_text_font,intro_text_font ):
-    contador_vidas = 1
+    contador_vidas = 3
     puntaje = 0
     game_over_screen = False
     win_screen = False
@@ -77,6 +77,11 @@ def game(gral_text_font,intro_text_font ):
         character_sprite_rect.x = max(0, character_sprite_rect.x)
         character_sprite_rect.x = min(constants.DISPLAY_WIDTH - character_sprite_rect.width, character_sprite_rect.x)
 
+        impact_sound = pg.mixer.Sound(constants.IMPACT_SOUND_PATH)
+        impact_sound.set_volume(0.4)
+
+        fall_sound = pg.mixer.Sound(constants.FALL_SOUND_PATH)
+        fall_sound.set_volume(0.6)
 
         # 1.  -------------- Movimiento de la Pelota ----------------
         if not paused:
@@ -111,14 +116,17 @@ def game(gral_text_font,intro_text_font ):
         # 3. -------------- Lógica de Colisiones ----------------
             # -------- Colisión Izquierda
             if pelota_rect.left <= 0:
+                impact_sound.play()
                 pelota_dx = abs(pelota_dx) # Fuerza el rebote hacia la derecha
                 pelota_rect.left = 0       # Corrige la posición
             # ------------ Colisión Derecha
             elif pelota_rect.right >= constants.DISPLAY_WIDTH:
+                impact_sound.play()
                 pelota_dx = -abs(pelota_dx) # Fuerza el rebote hacia la izquierda
                 pelota_rect.right = constants.DISPLAY_WIDTH # Corrige la posición
             # ------------------ Colisión Superior
             if pelota_rect.top <= 0:
+                impact_sound.play()
                 pelota_dy = abs(pelota_dy) # Fuerza el rebote hacia abajo
                 pelota_rect.top = 0      # Corrige la posición
 
@@ -126,6 +134,7 @@ def game(gral_text_font,intro_text_font ):
 
             if pelota_rect.colliderect(character_sprite_rect) and pelota_dy > 0:
                 # Solo rebota si la pelota baja
+                impact_sound.play()
                 pelota_dy *= -1 
                 pelota_rect.bottom = character_sprite_rect.top # Asegura que no se atasque
                 
@@ -143,6 +152,7 @@ def game(gral_text_font,intro_text_font ):
         ladrillos_a_eliminar = []
         for ladrillo in ladrillos:
             if pelota_rect.colliderect(ladrillo):
+                impact_sound.play()
                 # Invertimos la dirección vertical y eliminamos el ladrillo
                 pelota_dy *= -1
                 
@@ -161,6 +171,7 @@ def game(gral_text_font,intro_text_font ):
         
         # Si la pelota cae por debajo de la nave 3 veces (Game Over)
         if pelota_rect.bottom >= constants.DISPLAY_HEIGTH:
+            fall_sound.play()
             contador_vidas -= 1
 
             if contador_vidas <= 0:

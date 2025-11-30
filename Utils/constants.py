@@ -23,6 +23,8 @@ MENU_BUTTON_PATH = "assets/images/button_menu.png"
 VOLUME_ON_BUTTON_PATH = "assets/images/speaker.png"
 VOLUME_OFF_BUTTON_PATH = "assets/images/speaker_off.png"
 BUTTON_SOUND_PATH = "assets/Sounds/buttton_sound.wav"
+IMPACT_SOUND_PATH = "assets/Sounds/impact_sound.ogg"
+FALL_SOUND_PATH = "assets/Sounds/fall_sound.wav"
 
 # COLORS
 

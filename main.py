@@ -1,7 +1,8 @@
-import pygame as pg
 import sys
 
-from screens import main_menu, introduction, ranking_screen, game_over, in_game
+import pygame as pg
+
+from screens import main_menu, introduction, ranking_screen, game_over, in_game, credits
 from Utils import functions,constants
 
 pg.init()
@@ -69,7 +70,6 @@ def main():
         
         clock.tick(60)  # Limitar a 60 FPS
         
-       
 
         # entrega la lista de eventos que pueden ocurrir en el juego
         for event in pg.event.get():
@@ -99,6 +99,22 @@ def main():
                         pg.mixer.music.unpause()
                     else:
                         pg.mixer.music.pause()
+
+                elif credits_button.collidepoint(mouse_pos):
+                    credits.draw_credits(gral_text_font)
+                    waiting_for_f = True
+
+                    while waiting_for_f:
+
+                        for event in pg.event.get():
+                            if event.type == pg.QUIT:
+                                run = False
+                                waiting_for_f = False
+
+                            elif event.type == pg.KEYDOWN:
+                                if event.key == pg.K_f:
+                                    waiting_for_f = False
+
 
                 elif ranking_button.collidepoint(mouse_pos):
                     button_sound.play()
@@ -134,8 +150,8 @@ def main():
             if introducction and not intro_music_playing:
                 pg.mixer.music.load(constants.INTRO_MUSIC_PATH)
                 pg.mixer.music.play(-1)     
-                introduction.introduction(screen, intro_text_font, gral_text_font)
-                introducction = False
+                state = introduction.introduction(screen, intro_text_font, gral_text_font)
+                introducction = state
                 
             else:
 
@@ -143,6 +159,7 @@ def main():
 
                 if not game_music_playing:
                     pg.mixer.music.load(constants.GAME_MUSIC_PATH)
+                    pg.mixer.music.set_volume(0.2)
                     pg.mixer.music.play(-1)  
                     game_music_playing = True
 
